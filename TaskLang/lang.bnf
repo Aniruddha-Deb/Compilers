@@ -1,0 +1,4 @@
+<task_file> ::= {<date> NEWLINE <task_section> NEWLINE}.
+<date> ::= DATE.
+<task_section> ::= {<heading> NEWLINE INDENT {<task>} DEDENT}
+<task> ::= (-|X) SENTENCE NEWLINE {INDENT <task> DEDENT} 
