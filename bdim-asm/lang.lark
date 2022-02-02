@@ -1,0 +1,32 @@
+start: file
+file: WS* text [data] ".end" WS*
+
+text: ".text" (instruction | LABEL instruction)+ 
+data: ".data" (LABEL NUM)+ 
+
+instruction: ISA_NP 
+		   | ISA_1P OP 
+		   | ISA_2P OP "," OP 
+		   | ISA_3P OP "," OP "," OP 
+
+LABEL: CNAME ":"
+OP: CNAME | NUM
+NUM: "#" SIGNED_INT | "#x" HEXDIGIT+
+
+COMMENT: /;.*/
+
+ISA_NP: "halt"
+ISA_1P: "pr" | "inp" | "jmp"
+ISA_2P: "str" | "ldr" | "not" | "jif" 
+ISA_3P: "or" | "and" | "add" | "sub" | "mul" | "div" | "mod" | "eq" | "gt"
+
+%import common.WS_INLINE
+%import common.NEWLINE
+%import common.CNAME
+%import common.SIGNED_INT
+%import common.HEXDIGIT
+%import common.WS
+%ignore WS_INLINE
+%ignore NEWLINE
+%ignore COMMENT
+

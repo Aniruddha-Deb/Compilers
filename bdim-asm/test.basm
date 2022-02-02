@@ -1,0 +1,8 @@
+.text 
+	add a, a, #5
+	halt
+
+.data
+	a: #0
+
+.end
