@@ -56,28 +56,38 @@ else
 fun parse expr = 
 let
 	fun D ans ((NUM n)::L) = (n, L)
-	  | D ans (LPAREN::L) = E ans L
-	  | D ans L = raise ParserException
+	  | D ans (LPAREN::L) = let val (ans', (RPAREN::L')) = E ans L in (ans',L') end
+      | D ans (RPAREN::L) = (ans,(RPAREN::L))
+	  | D ans (ADD::L) = (ans,(ADD::L))
+	  | D ans (SUB::L) = (ans,(SUB::L))
+	  | D ans (MUL::L) = (ans,(MUL::L))
+	  | D ans (DIV::L) = (ans,(DIV::L))
+	  | D ans (MOD::L) = (ans,(MOD::L))
+      | D ans [] = (ans,[])
 	
 	and T' ans (MUL::L) = let val (ans',L') = D 0 L in E' (ans*ans') L' end
 	  | T' ans (DIV::L) = let val (ans',L') = D 0 L in E' (ans div ans') L' end
 	  | T' ans (MOD::L) = let val (ans',L') = D 0 L in E' (ans mod ans') L' end
 	  | T' ans (ADD::L) = (ans,(ADD::L))
-	  | T' ans (SUB::L) = (ans,(ADD::L))
+	  | T' ans (SUB::L) = (ans,(SUB::L))
+      | T' ans (RPAREN::L) = (ans,(RPAREN::L))
 	  | T' ans [] = (ans, [])
 	  | T' ans L = raise ParserException
 	
-	and T ans (LPAREN::L) = let val (ans',(RPAREN::L')) = D ans L in T' ans' L' end
+	and T ans (LPAREN::L) = let val (ans',L') = D ans (LPAREN::L) in T' ans' L' end
 	  | T ans ((NUM n)::L) = let val (ans',L') = D ans ((NUM n)::L) in T' ans' L' end
+      | T ans (RPAREN::L) = (ans,(RPAREN::L))
 	  | T ans L = raise ParserException
 	
 	and E' ans (ADD::L) = let val (ans',L') = T 0 L in E' (ans+ans') L' end
 	  | E' ans (SUB::L) = let val (ans',L') = T 0 L in E' (ans-ans') L' end
+      | E' ans (RPAREN::L) = (ans,(RPAREN::L))
 	  | E' ans [] = (ans, [])
 	  | E' ans L = raise ParserException
 	
-	and E ans (LPAREN::L) = let val (ans',(RPAREN::L')) = T ans L in E' ans' L' end
+	and E ans (LPAREN::L) = let val (ans',L') = T ans (LPAREN::L) in E' ans' L' end
 	  | E ans ((NUM n)::L) = let val (ans',L') = T ans ((NUM n)::L) in E' ans' L' end
+      | E ans (RPAREN::L) = (ans,(RPAREN::L))
 	  | E ans L = raise ParserException
 		
 	and S ans [] = (ans, [])
