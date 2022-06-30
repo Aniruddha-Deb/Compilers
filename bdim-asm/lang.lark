@@ -1,17 +1,21 @@
 start: file
 file: WS* text [data] ".end" WS*
 
-text: ".text" (instruction | LABEL instruction)+ 
-data: ".data" (LABEL NUM)+ 
+text: ".text" line+
+data: ".data" (label NUM)+ 
+
+line: [label] instruction
 
 instruction: ISA_NP 
 		   | ISA_1P OP 
 		   | ISA_2P OP "," OP 
 		   | ISA_3P OP "," OP "," OP 
 
-LABEL: CNAME ":"
-OP: CNAME | NUM
+label: NAME ":"
+OP: NAME | NUM
 NUM: "#" SIGNED_INT | "#x" HEXDIGIT+
+
+NAME: /!(/ 
 
 COMMENT: /;.*/
 
@@ -19,6 +23,8 @@ ISA_NP: "halt"
 ISA_1P: "pr" | "inp" | "jmp"
 ISA_2P: "str" | "ldr" | "not" | "jif" 
 ISA_3P: "or" | "and" | "add" | "sub" | "mul" | "div" | "mod" | "eq" | "gt"
+
+ISA: ISA_NP | ISA_1P | ISA_2P | ISA_3P
 
 %import common.WS_INLINE
 %import common.NEWLINE

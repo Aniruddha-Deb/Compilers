@@ -2,6 +2,8 @@
 	add a, a, #5
 	halt
 
+lbl: sub b, b, #5
+
 .data
 	a: #0
 
